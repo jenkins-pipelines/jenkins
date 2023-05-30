@@ -1,0 +1,27 @@
+pipeline{
+agent{
+label 'slave01'
+}
+tools{
+maven "maven_3.9.1"
+}
+stages{
+stage("checkoutcode"){
+steps{
+git credentialsId: '4dffaadc-c789-423c-b8f1-bdf8d5e3592d', url: 'https://github.com/MallegowdaKM/maven-web-application.git'
+}
+}
+stage("RunTestandBuild"){
+steps{
+parallel(
+runtests:{
+sh "mvn clean test"
+},
+build:{
+sh "mvn clean package"
+}
+)
+}//steps
+}//stage
+}//stages
+}
