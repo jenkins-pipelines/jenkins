@@ -1,0 +1,29 @@
+pipeline{
+agent{
+label 'ansibleslave'
+}
+tools{
+maven "maven_3.9.1"
+}
+options {
+buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '1', numToKeepStr: '5')
+timestamps()
+}
+environment{
+AWSEC2_PRIVATEKEY=credentials('pem-file')
+}
+stages{
+stage("checkout"){
+steps{
+git credentialsId: '4dffaadc-c789-423c-b8f1-bdf8d5e3592d', url: 'https://github.com/mg2906/jekins-ansible-dynimc-inv.git'
+}
+}
+stage("build"){
+steps{
+sh "hostname"
+sh "whoami"
+sh "ansible-inventory --graph -i inventory/aws_ec2.yaml"
+sh "ansible-playbook -i inventory/aws_ec2.yaml --private-key=$AWSEC2_PRIVATEKEY playbooks/installTomcat.yml --ssh-common-args='-o StrictHostKeyChecking=no' -l tomcat"}
+}
+}
+}
