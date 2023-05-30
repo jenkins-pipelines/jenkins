@@ -1,0 +1,34 @@
+@Library('slack') _
+
+pipeline{
+agent any
+tools{
+maven "maven_3.9.1"
+}
+stages{
+stage("checkoutcode"){
+steps{
+git credentialsId: 'dca17f04-de8f-42e1-8dd7-46f09b74032d', url: 'https://github.com/MallegowdaKM/maven-web-application.git'
+}
+}
+stage("build"){
+steps{
+sh "mvn clean package"
+}
+}
+}
+post {
+  aborted {
+    // One or more steps need to be included within each condition's block.
+    sendSlackNotifications(currentBuild.result)
+  }
+  success {
+    // One or more steps need to be included within each condition's block.
+    sendSlackNotifications(currentBuild.result)
+  }
+  failure {
+    // One or more steps need to be included within each condition's block.
+    sendSlackNotifications(currentBuild.result)
+  }
+}
+}//pipeline
