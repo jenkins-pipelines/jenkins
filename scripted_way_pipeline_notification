@@ -1,0 +1,61 @@
+node {
+def mavenHome = tool name: 'maven_3.9.1'
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '1', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
+try{
+slack("STARTED")
+echo "build_number is: ${env.BUILD_NUMBER}"
+echo "job_name is: ${env.JOB_NAME}"
+echo "node_name is: ${env.NODE_NAME}"
+stage ('checkoutcode'){
+git credentialsId: 'dca17f04-de8f-42e1-8dd7-46f09b74032d', url: 'https://github.com/MallegowdaKM/maven-web-application.git'
+}
+stage ('build'){
+sh "${mavenHome}/bin/mvn clean package"
+}
+stage ('executesonarQube'){
+sh "${mavenHome}/bin/mvn sonar:sonar"
+}
+/*stage ('uploadartifactintonexus'){
+sh "${mavenHome}/bin/mvn deploy"
+}
+stage ('deployappintotomcatserver'){
+sshagent(['ebc18b3d-5f5e-4886-9ecc-076bd6edddd9']){
+sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.47.139:/opt/tomcat9/webapps/"
+}
+}
+*/
+echo "result_of_script: ${currentBuild.result}"
+}//try
+catch(e){
+currentBuild.result='FAILURE'
+}
+finally{
+slack(currentBuild.result)
+}//finally
+}//node
+
+def slack(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus =  buildStatus ?: 'SUCCESSFUL'
+
+  // Default values
+  def colorName = 'RED'
+  def colorCode = '#FF0000'
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def summary = "${subject} (${env.BUILD_URL})"
+
+  // Override default values based on build status
+  if (buildStatus == 'STARTED') {
+    colorName= 'YELLOW'
+    colorCode = '#FFFF00'
+  } else if (buildStatus == 'SUCCESSFUL') {
+    colorName = 'GREEN'
+    colorCode = '#00FF00'
+  } else {
+    colorName = 'RED'
+    colorCode = '#FF0000'
+  }
+
+  // Send notifications
+  slackSend (color: colorCode, message: summary)
+}
