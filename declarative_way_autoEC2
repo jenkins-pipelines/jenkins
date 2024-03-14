@@ -15,7 +15,7 @@ AWSEC2_PRIVATEKEY=credentials('pem-file')
 stages{
 stage("checkout"){
 steps{
-git credentialsId: '4dffaadc-c789-423c-b8f1-bdf8d5e3592d', url: 'https://github.com/mg2906/jekins-ansible-dynimc-inv.git'
+git credentialsId: '4dffaadc-c789-423c-b8f1-bdf8d5e3592d', url: 'https://github.com/jenkins-pipelines/jekins-ansible-dynimc-inv.git'
 }
 }
 stage('executeTerraformscript'){
