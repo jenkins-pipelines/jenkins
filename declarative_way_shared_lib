@@ -8,7 +8,7 @@ maven "maven_3.9.1"
 stages{
 stage("checkoutcode"){
 steps{
-git credentialsId: 'dca17f04-de8f-42e1-8dd7-46f09b74032d', url: 'https://github.com/MallegowdaKM/maven-web-application.git'
+git credentialsId: 'dca17f04-de8f-42e1-8dd7-46f09b74032d', url: 'https://github.com/mg2906/maven-web-application-.git'
 }
 }
 stage("build"){
