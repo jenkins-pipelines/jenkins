@@ -14,7 +14,7 @@ stages{
 stage("checkout"){
 steps{
 slack("STARTED")
-git branch: "${params.BranchName}", credentialsId: '4dffaadc-c789-423c-b8f1-bdf8d5e3592d', url: 'https://github.com/MallegowdaKM/maven-web-application.git'
+git branch: "${params.BranchName}", credentialsId: '4dffaadc-c789-423c-b8f1-bdf8d5e3592d', url: 'https://github.com/mg2906/maven-web-application-.git'
 }
 }
 stage("build"){
